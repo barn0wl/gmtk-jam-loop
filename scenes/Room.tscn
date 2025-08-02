@@ -9,4 +9,10 @@ script = ExtResource("1_llheb")
 
 [node name="EnemyContainer" type="Node2D" parent="."]
 
-[node name="SpawnPoints" type="Node2D" parent="."]
+[node name="DebugLabel" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="LayoutContainer" type="Node2D" parent="."]
+
+[node name="ExitContainer" type="Node2D" parent="."]

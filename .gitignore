@@ -20,3 +20,6 @@ tmp/
 # OS specific files
 .DS_Store
 Thumbs.db
+
+# Vs code specific files
+.vscode/

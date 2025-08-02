@@ -98,4 +98,12 @@ func use_equipped_item() -> void:
 		_:
 			print("Cannot use item of type: ", item_type)
 			
-			
+func drop_item(item_id: String):
+	var item_scene = preload("res://scenes/ResourceItem.tscn")
+	var drop = item_scene.instantiate()
+	drop.item_id = item_id
+	drop.register_in_world = true
+	drop.global_position = global_position + Vector2(16, 0)
+
+	var room = get_tree().current_scene.get_node("World")
+	room.add_child(drop)

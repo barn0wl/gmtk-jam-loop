@@ -19,12 +19,17 @@ func spawn_player():
 	var player_scene = preload("res://scenes/Player.tscn")
 	player = player_scene.instantiate()
 
+	# Find RoomManager in current scene
 	var current_scene = get_tree().current_scene
+	var room_manager = current_scene.get_node("RoomManager")
 	var world = current_scene.get_node("World")
-	var spawn = world.get_node("PlayerSpawn")
 
-	player.global_position = spawn.global_position
 	world.add_child(player)
+
+	# Center player in room (0, 0)
+	var room_coords = Vector2(0, 0)
+	var offset = room_manager.room_size / 2
+	player.global_position = room_coords * room_manager.room_size + offset
 
 func on_nightfall():
 	current_state = GameState.NIGHT

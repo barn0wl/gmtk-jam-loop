@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://b847if3mijn60"]
+
+[node name="Beach01" type="Node2D"]
+
+[node name="ResourceSpawn_wood" type="Marker2D" parent="." groups=["resource_spawns"]]
+position = Vector2(133, 137)
+
+[node name="ResourceSpawn_wood_2" type="Marker2D" parent="." groups=["resource_spawns"]]
+position = Vector2(25, 105)
+
+[node name="ResourceSpawn_stone" type="Marker2D" parent="." groups=["resource_spawns"]]
+position = Vector2(256, 143)
+
+[node name="Exit_right" type="Marker2D" parent="." groups=["exit_spawns"]]
+position = Vector2(320, 84)
+
+[node name="Exit_up" type="Marker2D" parent="." groups=["exit_spawns"]]
+position = Vector2(51, 0)
