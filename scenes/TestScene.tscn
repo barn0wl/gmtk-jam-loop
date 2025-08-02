@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3 uid="uid://mg6lameu85j0"]
+
+[ext_resource type="PackedScene" uid="uid://bja3rulksvita" path="res://scenes/Campfire.tscn" id="1_2gju5"]
+[ext_resource type="Script" uid="uid://cpeh00a1ngl53" path="res://scripts/TestScene.gd" id="1_nb1wl"]
+[ext_resource type="PackedScene" uid="uid://cc3407ufsjpwp" path="res://scenes/ResourceItem.tscn" id="2_rlkm5"]
+
+[node name="TestScene" type="Node2D"]
+script = ExtResource("1_nb1wl")
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="PlayerSpawn" type="Marker2D" parent="World"]
+position = Vector2(230, 113)
+
+[node name="Campfire" parent="World" instance=ExtResource("1_2gju5")]
+position = Vector2(122, 103)
+
+[node name="ResourceItem" parent="World" instance=ExtResource("2_rlkm5")]
+position = Vector2(69, 30)
+quantity = 4
+
+[node name="ResourceItem2" parent="World" instance=ExtResource("2_rlkm5")]
+position = Vector2(235, 45)
+item_id = "stone"
+quantity = 2
+
+[node name="ResourceItem3" parent="World" instance=ExtResource("2_rlkm5")]
+position = Vector2(34, 93)
+item_id = "torch"

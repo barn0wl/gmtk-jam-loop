@@ -1,0 +1,22 @@
+# Godot generated files
+.godot/
+export_presets.cfg
+*.import
+*.translation
+
+# Editor specific files
+.editor/
+editor_layout.cfg
+project_metadata.cfg
+
+# Build and export related
+build/
+export/
+
+# Temporary files and logs
+*.log
+tmp/
+
+# OS specific files
+.DS_Store
+Thumbs.db
