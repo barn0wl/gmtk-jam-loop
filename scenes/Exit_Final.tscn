@@ -1,16 +1,16 @@
 [gd_scene load_steps=4 format=3 uid="uid://5yk45oqqxec6"]
 
 [ext_resource type="Script" uid="uid://c67y8d2se6uhf" path="res://scripts/Exit.gd" id="1_tnase"]
-[ext_resource type="Texture2D" uid="uid://bv482ff6jt16e" path="res://assets/exit.png" id="2_k0x0n"]
+[ext_resource type="Texture2D" uid="uid://djfpspkgwavtx" path="res://assets/portal.png" id="2_h7vrp"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_yhnsb"]
 size = Vector2(16, 16)
 
-[node name="Exit" type="Area2D"]
+[node name="Exit_Final" type="Area2D"]
 script = ExtResource("1_tnase")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("2_k0x0n")
+texture = ExtResource("2_h7vrp")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_yhnsb")

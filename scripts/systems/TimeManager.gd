@@ -21,7 +21,6 @@ func _process(delta: float):
 		return
 
 	time_left -= delta
-	update_ui()
 
 	if time_left <= 0:
 		time_left = 0

@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://nlie1bwq3alj"]
+[gd_scene load_steps=2 format=3 uid="uid://nlie1bwq3alj"]
 
 [ext_resource type="Script" uid="uid://dwl43xphi1tcp" path="res://scripts/Room.gd" id="1_llheb"]
-[ext_resource type="Script" uid="uid://conen50hknd1p" path="res://scripts/RoomSpawner.gd" id="2_liqgt"]
 
 [node name="Room" type="Node2D"]
 script = ExtResource("1_llheb")
@@ -18,5 +17,4 @@ offset_bottom = 23.0
 
 [node name="ExitContainer" type="Node2D" parent="."]
 
-[node name="RoomSpawner" type="Node" parent="."]
-script = ExtResource("2_liqgt")
+[node name="WallContainer" type="Node2D" parent="."]

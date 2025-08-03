@@ -1,9 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://mg6lameu85j0"]
-
-[ext_resource type="PackedScene" uid="uid://nu33bt3guqn2" path="res://scenes/RoomManager.tscn" id="3_n77mx"]
-
-[node name="TestScene" type="Node2D"]
-
-[node name="World" type="Node2D" parent="."]
-
-[node name="RoomManager" parent="." instance=ExtResource("3_n77mx")]
