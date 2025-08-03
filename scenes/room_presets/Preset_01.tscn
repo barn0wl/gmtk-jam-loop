@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://b847if3mijn60"]
+
+[node name="Preset_01" type="Node2D"]
+
+[node name="Clock_spawn" type="Marker2D" parent="." groups=["clock_spawns"]]
+position = Vector2(133, 137)
+
+[node name="Energy_spawn" type="Marker2D" parent="." groups=["energy_spawns"]]
+position = Vector2(25, 105)
+
+[node name="Exit_right" type="Marker2D" parent="." groups=["exit_spawns"]]
+position = Vector2(320, 84)
+
+[node name="Exit_up" type="Marker2D" parent="." groups=["exit_spawns"]]
+position = Vector2(51, 0)

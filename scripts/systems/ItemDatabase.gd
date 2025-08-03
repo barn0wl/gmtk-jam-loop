@@ -7,41 +7,28 @@ func _ready():
 
 func load_items():
 	items = {
-		"wood": {
-			"id": "wood",
-			"name": "Wood",
-			"type": "resource",
-			"description": "Used for crafting.",
-			"stackable": true,
-			"icon": preload("res://assets/items/0001.png")
-		},
-		"stone": {
-			"id": "stone",
-			"name": "Stone",
-			"type": "resource",
-			"description": "Can be used to craft tools.",
-			"stackable": true,
-			"icon": preload("res://assets/items/0002.png")
-		},
-		"spear": {
-			"id": "spear",
-			"name": "Spear",
-			"type": "weapon",
-			"description": "Basic melee weapon.",
+		"clock": {
+			"id": "clock",
+			"name": "Clock",
+			"type": "consumable",
+			"time_bonus": 10.0,
 			"stackable": false,
-			"damage": 10,
-			"equippable": true,
-			"icon": preload("res://assets/items/spear.png")
+			"icon": preload("res://assets/items/clock.png")
 		},
-		"torch": {
-			"id": "torch",
-			"name": "Torch",
-			"type": "tool",
-			"description": "Lights your way during night.",
+		"key": {
+			"id": "key",
+			"name": "Key",
+			"type": "objective",
 			"stackable": false,
-			"light_radius": 120,
-			"equippable": true,
-			"icon": preload("res://assets/items/torch.png")
+			"icon": preload("res://assets/items/key.png")
+		},
+		"energy_orb": {
+			"id": "energy_orb",
+			"name": "Energy Orb",
+			"type": "powerup",
+			"energy_bonus": 1,
+			"stackable": false,
+			"icon": preload("res://assets/items/energy_orb.png")
 		}
 	}
 

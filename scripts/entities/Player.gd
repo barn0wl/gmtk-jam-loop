@@ -1,109 +1,60 @@
 extends CharacterBody2D
 
 @export var move_speed: float = 150.0
-@export var max_health: int = 100
-var health: int = max_health
+@export var dash_speed: float = 450.0
+@export var dash_duration: float = 0.15
+@export var dash_cooldown: float = 0.3
+@export var max_energy: int = 3
+@export var energy_recharge_rate: float = 0.5  # 1 point every 0.5 sec
 
-var inventory := []  # simple inventory array (e.g., item IDs or references)
-var equipped_item: Dictionary = {}  # Currently equipped item data (id, amount, data)
+var energy: float = max_energy
+var dash_timer: float = 0.0
+var cooldown_timer: float = 0.0
+var is_dashing: bool = false
+var dash_direction: Vector2 = Vector2.ZERO
 
-# Movement input
-func _physics_process(_delta: float) -> void:
-	var input_vector = Vector2.ZERO
-	input_vector.x = Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left")
-	input_vector.y = Input.get_action_strength("ui_down") - Input.get_action_strength("ui_up")
-	input_vector = input_vector.normalized()
+func _ready():
+	add_to_group("player")
 
-	velocity = input_vector * move_speed
+func _physics_process(delta: float) -> void:
+	# Recharge energy over time (if not at max)
+	if energy < max_energy:
+		energy += delta / energy_recharge_rate
+		energy = min(energy, max_energy)
+
+	# Handle cooldown
+	if cooldown_timer > 0:
+		cooldown_timer -= delta
+
+	# Handle dash
+	if is_dashing:
+		dash_timer -= delta
+		velocity = dash_direction * dash_speed
+		if dash_timer <= 0:
+			is_dashing = false
+			cooldown_timer = dash_cooldown
+	else:
+		var input_vector = Vector2(
+			Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left"),
+			Input.get_action_strength("ui_down") - Input.get_action_strength("ui_up")
+		).normalized()
+
+		velocity = input_vector * move_speed
+
+		# Dash trigger
+		if Input.is_action_just_pressed("dash") and energy >= 1 and input_vector != Vector2.ZERO and cooldown_timer <= 0:
+			start_dash(input_vector)
+
 	move_and_slide()
 
-func take_damage(amount: int) -> void:
-	health -= amount
-	print("Player took ", amount, " damage. HP: ", health)
-	if health <= 0:
-		die()
+func start_dash(direction: Vector2):
+	is_dashing = true
+	dash_direction = direction.normalized()
+	dash_timer = dash_duration
+	energy -= 1
 
-func die():
-	print("Player died.")
-	GameManager.game_over()
+func recharge_energy(amount: int):
+	energy = min(energy + amount, max_energy)
 
-# Utility
-func is_alive() -> bool:
-	return health > 0
-
-func heal(amount: int) -> void:
-	health = min(health + amount, max_health)
-	
-func add_to_inventory(item_id: String, amount: int) -> void:
-	if not ItemDatabase.item_exists(item_id):
-		print("Invalid item: ", item_id)
-		return
-		
-	var item_data = ItemDatabase.get_item(item_id)
-	
-	if item_data.get("stackable", true):
-		# try stacking (simple logic for now)
-		inventory.append({"id": item_id, "amount": amount})
-	else:
-		for i in amount:
-			inventory.append({"id": item_id, "amount": 1})
-
-func equip_item(item_id: String) -> void:
-	for entry in inventory:
-		if entry["id"] == item_id:
-			var item_data = ItemDatabase.get_item(item_id)
-			if item_data.get("equippable", false):
-				equipped_item = {
-					"id": item_id,
-					"amount": entry["amount"],
-					"data": item_data
-				}
-				print("Equipped: ", item_id)
-				return
-			else:
-				print(item_id, " is not equippable.")
-				return
-	print("Item not found in inventory: ", item_id)
-	
-func use_weapon(item: Dictionary) -> void:
-	print("Attacking with ", item["id"])
-	# TODO: trigger hitbox, animation, etc.
-
-func use_tool(item: Dictionary) -> void:
-	if item["id"] == "torch":
-		print("Torch active!")
-		# TODO: toggle a Light2D child node on/off, spawn light source, etc.
-
-func use_consumable(item: Dictionary) -> void:
-	# Sample effect: healing
-	if item["data"].has("heal_amount"):
-		heal(item["data"]["heal_amount"])
-		print("Used ", item["id"], " to heal.")
-		# remove 1 from inventory
-		
-func use_equipped_item() -> void:
-	if equipped_item.is_empty():
-		print("No item equipped.")
-		return
-
-	var item_type = equipped_item["data"].get("type", "")
-
-	match item_type:
-		"weapon":
-			use_weapon(equipped_item)
-		"tool":
-			use_tool(equipped_item)
-		"consumable":
-			use_consumable(equipped_item)
-		_:
-			print("Cannot use item of type: ", item_type)
-			
-func drop_item(item_id: String):
-	var item_scene = preload("res://scenes/ResourceItem.tscn")
-	var drop = item_scene.instantiate()
-	drop.item_id = item_id
-	drop.register_in_world = true
-	drop.global_position = global_position + Vector2(16, 0)
-
-	var room = get_tree().current_scene.get_node("World")
-	room.add_child(drop)
+func check_if_dashing() -> bool:
+	return is_dashing

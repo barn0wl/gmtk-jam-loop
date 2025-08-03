@@ -4,7 +4,8 @@ enum GameState { START, PLAYING, NIGHT, GAME_OVER }
 
 var current_state: GameState = GameState.START
 var player: Node = null
-var player_is_in_camp: bool = false
+var player_has_key: bool = false
+var current_level: int = 1  # Optional for scaling difficulty
 
 func _ready():
 	start_game()
@@ -19,9 +20,8 @@ func spawn_player():
 	var player_scene = preload("res://scenes/Player.tscn")
 	player = player_scene.instantiate()
 
-	# Find RoomManager in current scene
+	var room_manager = get_room_manager()
 	var current_scene = get_tree().current_scene
-	var room_manager = current_scene.get_node("RoomManager")
 	var world = current_scene.get_node("World")
 
 	world.add_child(player)
@@ -31,27 +31,38 @@ func spawn_player():
 	var offset = room_manager.room_size / 2
 	player.global_position = room_coords * room_manager.room_size + offset
 
-func on_nightfall():
-	current_state = GameState.NIGHT
-	if player_is_in_camp:
-		print("Player survived the night.")
-		start_new_loop()
-	else:
-		print("Player died outside the camp.")
-		game_over()
-
 func game_over():
 	current_state = GameState.GAME_OVER
 	TimeManager.stop_timer()
-	player.queue_free()
-	# Trigger game over UI or fade screen
+	if player:
+		player.queue_free()
 	print("Game Over")
 
-func start_new_loop():
-	# (Stretch) Keep items at camp, respawn enemies/resources
-	TimeManager.reset_timer()
-	spawn_player()
-	current_state = GameState.PLAYING
+func collect_key():
+	player_has_key = true
+	print("Key collected!")
 
-func set_player_in_camp(is_in_camp: bool):
-	player_is_in_camp = is_in_camp
+func next_level():
+	print("Level Complete! Advancing to next level...")
+
+	current_level += 1
+	player_has_key = false
+	var room_manager = get_room_manager()
+
+	TimeManager.reset_timer()
+	room_manager.generate_new_level()
+	move_player_to_start()
+
+func move_player_to_start():
+	var room_manager = get_room_manager()
+	var offset = room_manager.room_size / 2
+	player.global_position = Vector2.ZERO * room_manager.room_size + offset
+
+func get_room_manager():
+	# Find RoomManager in current scene
+	var current_scene = get_tree().current_scene
+	var room_manager = current_scene.get_node("RoomManager")
+	if room_manager:
+		return room_manager
+	else:
+		push_warning("Room manager not found in current Room")

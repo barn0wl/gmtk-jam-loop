@@ -1,13 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://mg6lameu85j0"]
+[gd_scene load_steps=2 format=3 uid="uid://mg6lameu85j0"]
 
-[ext_resource type="PackedScene" uid="uid://bja3rulksvita" path="res://scenes/Campfire.tscn" id="1_2gju5"]
 [ext_resource type="PackedScene" uid="uid://nu33bt3guqn2" path="res://scenes/RoomManager.tscn" id="3_n77mx"]
 
 [node name="TestScene" type="Node2D"]
 
 [node name="World" type="Node2D" parent="."]
-
-[node name="Campfire" parent="World" instance=ExtResource("1_2gju5")]
-position = Vector2(122, 103)
 
 [node name="RoomManager" parent="." instance=ExtResource("3_n77mx")]

@@ -1,25 +1,26 @@
 extends Node2D
 
-const EXIT_BUFFER = 32 # distance to move the Player after entering new room so it does not collide with Exits from previous rooms
+const EXIT_BUFFER = 32
 const ROOM_SCENE = preload("res://scenes/Room.tscn")
-const GRID_RADIUS = 1  # 1 = 3x3 grid (from -1 to 1 in both directions)
+const GRID_RADIUS = 1
 
 const ROOM_PRESET_MAP = {
-	Vector2i(0, 0): "res://scenes/room_presets/Beach_01.tscn",
-	Vector2i(0, 1): "res://scenes/room_presets/Beach_01.tscn",
-	Vector2i(1, 0): "res://scenes/room_presets/Beach_01.tscn",
-	# Add more as needed...
+	Vector2i(0, 0): "res://scenes/room_presets/Preset_01.tscn",
+	Vector2i(0, 1): "res://scenes/room_presets/Preset_01.tscn",
+	Vector2i(1, 0): "res://scenes/room_presets/Preset_01.tscn",
 }
 
-const DEFAULT_PRESET_PATH = "res://scenes/room_presets/Beach_01.tscn"
+const DEFAULT_PRESET_PATH = "res://scenes/room_presets/Preset_01.tscn"
 
 var ROOM_PADDING: Vector2 = Vector2(16, 16)
 @export var room_size: Vector2 = Vector2(320, 180)
-var active_rooms: Dictionary = {}  # key: Vector2i, value: Room instance
+
+var active_rooms: Dictionary = {}
 var current_room_coords: Vector2i = Vector2i.ZERO
 
 func _ready():
 	generate_initial_grid()
+	call_deferred("build_all_rooms")
 	move_player_to_room(Vector2i.ZERO)
 
 func generate_initial_grid():
@@ -28,16 +29,9 @@ func generate_initial_grid():
 			var coords = Vector2i(x, y)
 			load_room(coords)
 
-func get_player() -> Node:
-	if get_tree().current_scene.has_node("World/Player"):
-		return get_tree().current_scene.get_node("World/Player")
-	push_warning("Player not found in current scene!")
-	return null
-
-func get_camera() -> Camera2D:
-	if get_tree().current_scene.has_node("RoomManager/GameCamera"):
-		return get_tree().current_scene.get_node("RoomManager/GameCamera")
-	return null
+func build_all_rooms():
+	for coords in active_rooms.keys():
+		active_rooms[coords].build_room()
 
 func load_room(coords: Vector2i):
 	if active_rooms.has(coords):
@@ -45,8 +39,6 @@ func load_room(coords: Vector2i):
 
 	var room = ROOM_SCENE.instantiate()
 	room.room_coords = coords
-
-	# Auto-assign preset path
 	room.room_preset_path = ROOM_PRESET_MAP.get(coords, DEFAULT_PRESET_PATH)
 
 	add_child(room)
@@ -60,6 +52,12 @@ func unload_room(coords: Vector2i):
 		active_rooms[coords].queue_free()
 		active_rooms.erase(coords)
 
+func get_player() -> Node:
+	return get_tree().current_scene.get_node_or_null("World/Player")
+
+func get_camera() -> Camera2D:
+	return get_tree().current_scene.get_node_or_null("RoomManager/GameCamera")
+
 func move_player_to_room(coords: Vector2i):
 	var player = get_player()
 	if player:
@@ -68,10 +66,7 @@ func move_player_to_room(coords: Vector2i):
 		var target_pos = base_pos + offset
 		player.global_position = target_pos
 
-		var camera = get_camera()
-		if camera:
-			camera.position = target_pos
-
+	move_camera_to_room_center(coords)
 	current_room_coords = coords
 
 func move_to_room(direction: String):
@@ -87,29 +82,37 @@ func move_to_room(direction: String):
 
 	unload_room(current_room_coords)
 	load_room(new_coords)
+	call_deferred("build_all_rooms")  # Optionally re-init if rooms are loaded dynamically
 
 	move_player_into_room(direction, new_coords)
-
 	current_room_coords = new_coords
 
 func move_player_into_room(from_direction: String, target_coords: Vector2i):
+	print("🔁 Moving player into room:", target_coords, "from:", from_direction)
+
 	var player = get_player()
 	var offset: Vector2
 
 	match from_direction:
-		"up":    offset = Vector2(room_size.x / 2, room_size.y - EXIT_BUFFER)
-		"down":  offset = Vector2(room_size.x / 2, EXIT_BUFFER)
-		"left":  offset = Vector2(room_size.x - EXIT_BUFFER, room_size.y / 2)
+		"up": offset = Vector2(room_size.x / 2, room_size.y - EXIT_BUFFER)
+		"down": offset = Vector2(room_size.x / 2, EXIT_BUFFER)
+		"left": offset = Vector2(room_size.x - EXIT_BUFFER, room_size.y / 2)
 		"right": offset = Vector2(EXIT_BUFFER, room_size.y / 2)
-		_:
-			offset = room_size / 2.0
+		_: offset = room_size / 2
 
 	var base_pos = Vector2(target_coords) * (room_size + ROOM_PADDING)
 	var target_pos = base_pos + offset
-	player.global_position = target_pos
 
+	if player:
+		player.global_position = target_pos
+
+	move_camera_to_room_center(target_coords)
+
+func move_camera_to_room_center(coords: Vector2i):
 	var camera = get_camera()
 	if camera:
-		camera.position = target_pos
+		var base_pos = Vector2(coords) * (room_size + ROOM_PADDING)
+		var center_pos = base_pos + (room_size / 2)
 
-	print("Room:", target_coords, "| Base Pos:", base_pos, "| Offset:", offset, "| Final Pos:", target_pos)
+		camera.global_position = center_pos
+		print("📷 Moved camera to:", center_pos)
